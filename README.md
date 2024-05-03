@@ -56,7 +56,3 @@ Esse projeto está sendo desenvolvido para a cadeira de Programação Imperativa
     </td>
   </tr>
 </table>
-
-## Licença
-
-Lorem Ipsum has been the industry's standard
