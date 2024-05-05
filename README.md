@@ -23,7 +23,8 @@ Esse projeto está sendo desenvolvido para a cadeira de Programação Imperativa
     📩
   </li>
   <li>
-    <a href="https://github.com/Rafabvidal">Rafaela Vidal</a> -
+    <a href="https://github.com/Rafabvidal">Rafaela Vidal</a> - 
+    rbv2@cesar.school
     📩
   </li>
 </ul>
