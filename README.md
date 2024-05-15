@@ -20,7 +20,7 @@ Esse projeto está sendo desenvolvido para a cadeira de Programação Imperativa
   </li>
   <li>
     <a href="https://github.com/helotanaka">Heloísa Tanaka</a> -
-    📩
+    htf@cesar.school📩
   </li>
   <li>
     <a href="https://github.com/Rafabvidal">Rafaela Vidal</a> - 
