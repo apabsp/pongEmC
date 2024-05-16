@@ -11,9 +11,46 @@
 struct barrinha{
     int posY;
     int posX;
+    char direction = 'u' // pode ser Up Down Middle
     struct barrinha *next;
 };
 
+struct bola{
+    char myRepresentation;
+    int posX;
+    int posY;
+    char dirX;
+    char dirY;
+};
+
+void changeMyBallPosition(struct bola *bolinha) {
+    bolinha->posX += bolinha->dirX;
+    bolinha->posY += bolinha->dirY;
+}
+
+void checkIfBallTouchesPaddle(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola bolinha){
+
+    struct barrinha *imhere = NULL;
+    imhere = headEsquerda;
+    while(imhere != NULL){
+
+        if ( bolinha.posX == imhere->posX && bolinha.posY == imhere->posY){
+
+            bolinha.dirX = imhere->direction;
+            bolinha.dirY = 
+        }
+        x = x->next;
+    }
+
+}
+
+
+
+//int flag = 0;
+
+//if(flag == 0){
+//    changeMyBallPosition(bolinha, -1, -1)
+//}
 
 
 void startMyPaddle(struct barrinha **head, int startingPositionX, int startingPositionY, int height) {
@@ -29,6 +66,15 @@ void startMyPaddle(struct barrinha **head, int startingPositionX, int startingPo
         struct barrinha *meuNovo = (struct barrinha *)malloc(sizeof(struct barrinha));
         meuNovo->posY = startingPositionY + i; 
         meuNovo->posX = startingPositionX;
+       
+        if ( height / i > height/2){
+
+            meuNovo->direction = 'd';
+
+        } else if(i == height/2){
+            meuNovo->direction = 'm';
+        }
+
         meuNovo->next = NULL;
 
         current->next = meuNovo;
@@ -118,6 +164,7 @@ int main()
         printf("\nOla! Selecione o modo de jogo: \n1- 2 jogadores\n2- 4 jogadores\n");
         scanf("%d", &escolha);
         if(escolha == 1){
+        struct bola bolinha;
         //startgame1 function
         game1();
 
