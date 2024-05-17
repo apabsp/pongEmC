@@ -91,6 +91,12 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
         imhere = imhere->next;
     }
 
+    //now we need a check to see IF the ball hit the limit of the canvas. If it did so, on the top/bottom, simply bounce back. If it did on the left or right, give score
+
+    if (bolinha->posY == SCREEN_HEIGHT){ // supposedly this means it hit the bottom of the canvas
+
+    }
+
 
 
 }
