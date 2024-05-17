@@ -11,7 +11,7 @@
 struct barrinha{
     int posY;
     int posX;
-    char direction = 'u' // pode ser Up Down Middle
+    char direction; // pode ser Up Down Middle
     struct barrinha *next;
 };
 
@@ -19,28 +19,79 @@ struct bola{
     char myRepresentation;
     int posX;
     int posY;
-    char dirX;
-    char dirY;
+    int dirX;
+    int dirY;
+    struct bola *next; //Interesting thing about this is that we want to continuously be deleting the head and then filling in the *next
 };
 
-void changeMyBallPosition(struct bola *bolinha) {
+struct ballDirection{
+
+    int dirX;
+    int dirY;
+};
+
+
+void moveBall(struct bola *bolinha) {
+    
+    screenGotoxy(bolinha->posX, bolinha->posY);
+    printf(" ");
+    
+    
     bolinha->posX += bolinha->dirX;
     bolinha->posY += bolinha->dirY;
+    
+    
+    screenGotoxy(bolinha->posX, bolinha->posY);
+    printf("%c", bolinha->myRepresentation);
+
 }
 
-void checkIfBallTouchesPaddle(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola bolinha){
 
+
+
+
+
+void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
+    //so for collisions we have a few options:
+    // colliding with paddle 1, paddle 2, upper wall, bottom wall, left goal and right goal
+
+    //(if we're in 4playerMode, we add paddle3, paddle4, left wall, right wall, upper goal and botom goal)
     struct barrinha *imhere = NULL;
     imhere = headEsquerda;
     while(imhere != NULL){
 
-        if ( bolinha.posX == imhere->posX && bolinha.posY == imhere->posY){
+        if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the leftPaddle
 
-            bolinha.dirX = imhere->direction;
-            bolinha.dirY = 
+            // which part of the paddle is it? upper part? middlep art? bottom part???
+            bolinha->dirX=1; //I reverse the result to go the other way, right?
+            if(imhere->direction == 'u') {
+                bolinha->dirY = 1; // should go up
+            } else if(imhere->direction == 'd') {
+                bolinha->dirY = -1; // down
+            } else {
+                bolinha->dirY = 0; // straight ahead
+            }
         }
-        x = x->next;
+        imhere = imhere->next;
     }
+
+    imhere = headDireita;
+    while(imhere != NULL){
+
+        if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the rightPaddle
+            bolinha->dirX=-1;
+            if(imhere->direction == 'u') {
+                bolinha->dirY = 1; // should go up
+            } else if(imhere->direction == 'd') {
+                bolinha->dirY = -1; // down
+            } else {
+                bolinha->dirY = 0; // straight ahead
+            }
+        }
+        imhere = imhere->next;
+    }
+
+
 
 }
 
@@ -74,6 +125,9 @@ void startMyPaddle(struct barrinha **head, int startingPositionX, int startingPo
         } else if(i == height/2){
             meuNovo->direction = 'm';
         }
+        else{
+            meuNovo->direction = 'u';
+        }
 
         meuNovo->next = NULL;
 
@@ -96,8 +150,10 @@ void positionMyThing(struct barrinha *head){
 
 void modifyMyThing(struct barrinha *head, int newX, int newY){
     struct barrinha *n = head;
+
     screenGotoxy(head->posX, n->posY);
     printf(" ");
+
     while( n !=  NULL){
 
         if( n->next ==NULL){
@@ -118,7 +174,7 @@ void game1(){
 
     screenInit(1);
     keyboardInit();
-    timerInit(100); 
+    timerInit(25); 
     screenDrawBorders(); 
 
     
@@ -128,26 +184,47 @@ void game1(){
     startMyPaddle(&myLeftPaddle, 10, 10, height);
     startMyPaddle(&myRightPaddle, 230, 10, height);
 
+    /*Might be cool to turn this entire thing into a bolinha initializer function v*/
+    struct bola *bolinha = (struct bola*)malloc(sizeof(struct bola));
+    bolinha->posX = 30;
+    bolinha->posY = 30;
+    bolinha->myRepresentation = 'O';
+    bolinha->dirX = 1;
+    bolinha->dirY = 0;
+
+    struct bola *next = (struct bola*)malloc(sizeof(struct bola));
+    
+    next->posX = 30;
+    next->posY = 30;
+    next->myRepresentation = 'O';
+    next->dirX = 1;
+    next->dirY = 0;
+    bolinha->next = next;
+
     while (1) {
-        positionMyThing(myLeftPaddle);
-        positionMyThing(myRightPaddle);
-        
-        if (keyhit()) {
-            int key = readch();
-            if (key == 'w'){
-                modifyMyThing(myLeftPaddle, 0, -1);
+        if (timerTimeOver()) {
+            positionMyThing(myLeftPaddle);
+            positionMyThing(myRightPaddle);
+            moveBall(bolinha);
+            if (keyhit()) {
+                int key = readch();
+                if (key == 'w'){
+                    modifyMyThing(myLeftPaddle, 0, -1);
+                }
+                else if (key == 's'){
+                    modifyMyThing(myLeftPaddle, 0, 1);
+                }
+                else if (key == 'i'){
+                    modifyMyThing(myRightPaddle, 0, -1);
+                }
+                else if (key == 'k'){
+                    modifyMyThing(myRightPaddle, 0, 1);
+                }
+                
+                
             }
-            else if (key == 's'){
-                modifyMyThing(myLeftPaddle, 0, 1);
-            }
-            else if (key == 'i'){
-                modifyMyThing(myRightPaddle, 0, -1);
-            }
-            else if (key == 'k'){
-                modifyMyThing(myRightPaddle, 0, 1);
-            }
-            
-            
+            //void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
+            collisionCheck(myLeftPaddle, myRightPaddle, bolinha);
         }
     }
     
