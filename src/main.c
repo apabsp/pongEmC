@@ -51,11 +51,12 @@ void moveBall(struct bola *bolinha) {
 
 
 
-void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
+void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha, int *ponteiroDoScoreP1, int *ponteiroDoScoreP2){
     //so for collisions we have a few options:
     // colliding with paddle 1, paddle 2, upper wall, bottom wall, left goal and right goal
 
     //(if we're in 4playerMode, we add paddle3, paddle4, left wall, right wall, upper goal and botom goal)
+
     struct barrinha *imhere = NULL;
     imhere = headEsquerda;
     while(imhere != NULL){
@@ -93,7 +94,13 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
     //now we need a check to see IF the ball hit the limit of the canvas. If it did so, on the top/bottom, simply bounce back. If it did on the left or right, give score
 
-    if (bolinha->posY == SCREEN_HEIGHT){ // supposedly this means it hit the bottom of the canvas
+    if (bolinha->posY == SCREEN_HEIGHT - 13){ // supposedly this means it hit the bottom of the canvas
+        bolinha->dirY =  -1;
+
+    }
+
+    if (bolinha->posY == 2){ // supposedly this means it hit the top of the canvas, so I need the final result to be negative SCREEN HEIGHT
+        bolinha->dirY =  1;
 
     }
 
@@ -101,6 +108,11 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
 }
 
+void debugMode(struct bola *bolinha){
+    screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2); // maybe i'm not using the defined values actually
+    printf("x: %d y: %d", bolinha->posX, bolinha->posY);
+
+}
 
 
 //int flag = 0;
@@ -154,6 +166,15 @@ void positionMyThing(struct barrinha *head){
 
 }
 
+void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50]){
+
+    screenGotoxy(40 ,20);
+    printf("%s: %d", player1Name, *p1Score);
+
+
+}
+
+
 void modifyMyThing(struct barrinha *head, int newX, int newY){
     struct barrinha *n = head;
 
@@ -206,8 +227,18 @@ void game1(){
     next->dirX = 1;
     next->dirY = 0;
     bolinha->next = next;
+    int scoredo1 = 0;
+    int scoredo2 = 0;
+    int *p1Score = &scoredo1;
+    int *p2Score = &scoredo2;
+    char player1Name[50] = "Tony";//placeholder
+    char player2Name[50] = "Teste";
 
+    //(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50])
     while (1) {
+        //comment this to stop debug mode:
+        showScore(p1Score, p2Score, player1Name, player2Name);
+        debugMode(bolinha);
         if (timerTimeOver()) {
             positionMyThing(myLeftPaddle);
             positionMyThing(myRightPaddle);
@@ -230,7 +261,7 @@ void game1(){
                 
             }
             //void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
-            collisionCheck(myLeftPaddle, myRightPaddle, bolinha);
+            collisionCheck(myLeftPaddle, myRightPaddle, bolinha, p1Score, p2Score);
         }
     }
     
