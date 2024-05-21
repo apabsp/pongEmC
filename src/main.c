@@ -6,13 +6,14 @@
 #include <stdlib.h>
 #define SCREEN_HEIGHT 72
 #define SCREEN_WIDTH 240
-
+#define SCORE_TO_WIN 2
 
 struct barrinha{
     int posY;
     int posX;
     char direction; // pode ser Up Down Middle
     struct barrinha *next;
+
 };
 
 struct bola{
@@ -47,7 +48,27 @@ void moveBall(struct bola *bolinha) {
 }
 
 
+void centerBallandGoLeft( struct bola *bolinha){
 
+    bolinha->posX = 30;
+    bolinha->posY = 30;
+    bolinha->dirX = 1;
+    bolinha-> dirY = 0;
+}
+
+void centerBallandGoRight( struct bola *bolinha){
+
+    bolinha->posX = 30;
+    bolinha->posY = 30;
+    bolinha->dirX = -1;
+    bolinha-> dirY = 0;
+}
+
+void boogieWoogie( struct bola *bolinha){
+
+    bolinha->posX = 30;
+    bolinha->posY = 30;
+}
 
 
 
@@ -103,6 +124,28 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
         bolinha->dirY =  1;
 
     }
+
+
+    //first, scores:
+
+    if (bolinha->posX == SCREEN_WIDTH){ 
+        *ponteiroDoScoreP1 = *ponteiroDoScoreP1 + 1;
+        screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
+        printf(" ");
+        centerBallandGoRight(bolinha);
+    }
+
+
+    if (bolinha->posX == 0){
+        *ponteiroDoScoreP2 = *ponteiroDoScoreP2 + 1;
+        screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
+        printf(" ");
+        centerBallandGoLeft(bolinha);
+    }
+
+    //what now?,right, teleportation of ball in case we get a score.
+
+    // would be cool to check barrinha head n bottom to move it up/down too, so it doesn't go beyond the limits..
 
 
 
@@ -171,7 +214,19 @@ void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Nam
     screenGotoxy(40 ,20);
     printf("%s: %d", player1Name, *p1Score);
 
+    screenGotoxy(180, 20);
+    printf("%s: %d", player2Name, *p2Score);
 
+    if(*p1Score  >= SCORE_TO_WIN){
+        break;
+        printf("%s WINS!!!", player1Name);
+    }
+    if(*p2Score  >= SCORE_TO_WIN){
+        break;
+        printf("%s WINS!!!", player2Name);
+    }
+
+//HITTING THE LEFT SIDE MADE TONY GO UP BY 1, ACTUALLY!!
 }
 
 
