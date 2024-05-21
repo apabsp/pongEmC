@@ -50,7 +50,7 @@ void moveBall(struct bola *bolinha) {
 
 void centerBallandGoLeft( struct bola *bolinha){
 
-    bolinha->posX = 30;
+    bolinha->posX = 120;
     bolinha->posY = 30;
     bolinha->dirX = 1;
     bolinha-> dirY = 0;
@@ -58,7 +58,7 @@ void centerBallandGoLeft( struct bola *bolinha){
 
 void centerBallandGoRight( struct bola *bolinha){
 
-    bolinha->posX = 30;
+    bolinha->posX = 120;
     bolinha->posY = 30;
     bolinha->dirX = -1;
     bolinha-> dirY = 0;
@@ -128,11 +128,11 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
     //first, scores:
 
-    if (bolinha->posX == SCREEN_WIDTH){ 
+    if (bolinha->posX == SCREEN_WIDTH){ // right side has been hit!!!
         *ponteiroDoScoreP1 = *ponteiroDoScoreP1 + 1;
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
         printf(" ");
-        centerBallandGoRight(bolinha);
+        centerBallandGoLeft(bolinha);
     }
 
 
@@ -140,7 +140,7 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
         *ponteiroDoScoreP2 = *ponteiroDoScoreP2 + 1;
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
         printf(" ");
-        centerBallandGoLeft(bolinha);
+        centerBallandGoRight(bolinha);
     }
 
     //what now?,right, teleportation of ball in case we get a score.
@@ -150,6 +150,9 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
 
 }
+
+// file handle now....
+//when game1() starts, open file and read from it. then write when game ends
 
 void debugMode(struct bola *bolinha){
     screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2); // maybe i'm not using the defined values actually
@@ -209,7 +212,7 @@ void positionMyThing(struct barrinha *head){
 
 }
 
-void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50]){
+void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50], int *flag){
 
     screenGotoxy(40 ,20);
     printf("%s: %d", player1Name, *p1Score);
@@ -218,11 +221,13 @@ void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Nam
     printf("%s: %d", player2Name, *p2Score);
 
     if(*p1Score  >= SCORE_TO_WIN){
-        break;
+        *flag = 1;
+        screenClear();
         printf("%s WINS!!!", player1Name);
     }
     if(*p2Score  >= SCORE_TO_WIN){
-        break;
+        *flag = 1;
+        screenClear();
         printf("%s WINS!!!", player2Name);
     }
 
@@ -253,6 +258,31 @@ void modifyMyThing(struct barrinha *head, int newX, int newY){
 
 
 void game1(){
+
+    //we better turn this file handling into a function actually... can we have a FILE function?
+
+    // so what I wanna have for gameMode1, which is 1v1, is continuous lines of:
+    //player 1 name
+    //player 2 name
+    //player 1 score(int) player 2 score(int) matchDuration(int)
+    //pretty easy... it'll go on like this and we'll be able to store all games 
+    
+
+    FILE *myLittleBigFile = fopen("gameMode1.txt", "r");
+    if (myLittleBigFile == NULL) {
+        myLittleBigFile = fopen("gameMode1.txt", "w");
+        //printf("file has been created!");
+        
+        //we need to make a littlebigFile...........
+        fclose(myLittleBigFile);
+    }
+
+
+
+
+
+
+
 
     screenInit(1);
     keyboardInit();
@@ -288,11 +318,12 @@ void game1(){
     int *p2Score = &scoredo2;
     char player1Name[50] = "Tony";//placeholder
     char player2Name[50] = "Teste";
+    int flagForGameOver = 0; // turn this into 1 to end game!!
 
     //(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50])
-    while (1) {
+    while (flagForGameOver == 0) {
         //comment this to stop debug mode:
-        showScore(p1Score, p2Score, player1Name, player2Name);
+        showScore(p1Score, p2Score, player1Name, player2Name, &flagForGameOver);
         debugMode(bolinha);
         if (timerTimeOver()) {
             positionMyThing(myLeftPaddle);
@@ -337,7 +368,6 @@ int main()
         //startgame1 function
         game1();
 
-        break;
         }
     }
 
