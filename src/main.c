@@ -4,6 +4,7 @@
 #include "keyboard.h"
 #include "timer.h"
 #include <stdlib.h>
+#include <stdio.h>
 #define SCREEN_HEIGHT 72
 #define SCREEN_WIDTH 240
 #define SCORE_TO_WIN 2
@@ -231,7 +232,7 @@ void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Nam
         printf("%s WINS!!!", player2Name);
     }
 
-//HITTING THE LEFT SIDE MADE TONY GO UP BY 1, ACTUALLY!!
+//HITTING THE LEFT SIDE MADE TONY GO UP BY 1
 }
 
 
@@ -256,33 +257,15 @@ void modifyMyThing(struct barrinha *head, int newX, int newY){
 
 }
 
+void gameMode1Log(char nome1[50], char nome2[50], int score1, int score2){
+    FILE *game;
+    game = fopen("gameMode1.txt", "a");
 
-void game1(){
+    fprintf(game, "%s\n%s\n%d %d\n", nome1, nome2, score1, score2);
+    fclose(game);
+}
 
-    //we better turn this file handling into a function actually... can we have a FILE function?
-
-    // so what I wanna have for gameMode1, which is 1v1, is continuous lines of:
-    //player 1 name
-    //player 2 name
-    //player 1 score(int) player 2 score(int) matchDuration(int)
-    //pretty easy... it'll go on like this and we'll be able to store all games 
-    
-
-    FILE *myLittleBigFile = fopen("gameMode1.txt", "r");
-    if (myLittleBigFile == NULL) {
-        myLittleBigFile = fopen("gameMode1.txt", "w");
-        //printf("file has been created!");
-        
-        //we need to make a littlebigFile...........
-        fclose(myLittleBigFile);
-    }
-
-
-
-
-
-
-
+void game1(char player1Name[50], char player2Name[50]){
 
     screenInit(1);
     keyboardInit();
@@ -316,8 +299,6 @@ void game1(){
     int scoredo2 = 0;
     int *p1Score = &scoredo1;
     int *p2Score = &scoredo2;
-    char player1Name[50] = "Tony";//placeholder
-    char player2Name[50] = "Teste";
     int flagForGameOver = 0; // turn this into 1 to end game!!
 
     //(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50])
@@ -349,24 +330,74 @@ void game1(){
             //void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
             collisionCheck(myLeftPaddle, myRightPaddle, bolinha, p1Score, p2Score);
         }
+
+
     }
     
-
+    gameMode1Log(player1Name, player2Name, scoredo1, scoredo2);
         
 }
 
 
+void escreverHistoricoDePartidas(){
+    FILE *myLittleBigFile, *historico;
+    myLittleBigFile = fopen("gameMode1.txt", "r");
+    if (myLittleBigFile == NULL) {    
+        printf("Não há histórico!");
+    }
+    else{
+        historico = fopen("historico.txt", "w");
+        while(!feof(myLittleBigFile)){
+            char playerName1Buffer[100], playerName2Buffer[100];
+            int score1, score2, len;
+
+            fgets(playerName1Buffer, 100, myLittleBigFile);
+            len = strlen(playerName1Buffer);
+            playerName1Buffer[len - 1] = '\0';
+
+            fgets(playerName2Buffer,100, myLittleBigFile);
+            len = strlen(playerName2Buffer);
+            playerName2Buffer[len - 1] = '\0';
+
+            fscanf(myLittleBigFile, "%d %d", &score1, &score2); 
+
+            fprintf(historico, "%s vs %s (%d - %d)\n", playerName1Buffer, playerName2Buffer, score1, score2);
+
+            fgetc(myLittleBigFile);
+
+        }
+        fclose(historico);
+
+    }
+    fclose(myLittleBigFile);
+}
+
 
 int main()
 {
-    int escolha;
+
+    int escolha, len;
     while(1){
+        escreverHistoricoDePartidas();
         printf("\nOla! Selecione o modo de jogo: \n1- 2 jogadores\n2- 4 jogadores\n");
         scanf("%d", &escolha);
         if(escolha == 1){
-        struct bola bolinha;
-        //startgame1 function
-        game1();
+            
+            char player1Name[50], player2Name[50];
+            getchar();
+            printf("Digite o nome do Player 1: ");
+            fgets(player1Name, 50, stdin);
+            len = strlen(player1Name);
+            player1Name[len - 1] = '\0';
+            
+            printf("Digite o nome do Player 2: ");
+            fgets(player2Name, 50, stdin);
+            len = strlen(player2Name);
+            player2Name[len - 1] = '\0';
+
+            struct bola bolinha;
+            //startgame1 function
+            game1(player1Name,player2Name);
 
         }
     }
