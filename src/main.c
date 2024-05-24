@@ -351,7 +351,9 @@ void escreverHistoricoDePartidas(){
             char playerName1Buffer[100], playerName2Buffer[100];
             int score1, score2, len;
 
-            fgets(playerName1Buffer, 100, myLittleBigFile);
+            if(fgets(playerName1Buffer, 100, myLittleBigFile) == NULL){
+                break;
+            };
             len = strlen(playerName1Buffer);
             playerName1Buffer[len - 1] = '\0';
 
@@ -359,12 +361,11 @@ void escreverHistoricoDePartidas(){
             len = strlen(playerName2Buffer);
             playerName2Buffer[len - 1] = '\0';
 
-            fscanf(myLittleBigFile, "%d %d", &score1, &score2); 
+            fscanf(myLittleBigFile, "%d %d", &score1, &score2);
 
             fprintf(historico, "%s vs %s (%d - %d)\n", playerName1Buffer, playerName2Buffer, score1, score2);
 
             fgetc(myLittleBigFile);
-
         }
         fclose(historico);
 
