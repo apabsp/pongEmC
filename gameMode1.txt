@@ -55,3 +55,12 @@ tu
 eu
 tu
 0 2
+eu
+tu
+100 1
+eu
+tu
+1 0
+eu
+tu
+0 1
