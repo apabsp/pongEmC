@@ -7,7 +7,7 @@
 #include <stdio.h>
 #define SCREEN_HEIGHT 48
 #define SCREEN_WIDTH 180
-#define SCORE_TO_WIN 100
+#define SCORE_TO_WIN 5
 #define COLOR_RESET "\033[0m"
 #define COLOR_RED "\033[0;31m"
 #define COLOR_GREEN "\033[0;32m"
@@ -125,7 +125,7 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
     //now we need a check to see IF the ball hit the limit of the canvas. If it did so, on the top/bottom, simply bounce back. If it did on the left or right, give score
 
-    if (bolinha->posY <= 1){ // supposedly this means it hit the top of the canvas
+    if (bolinha->posY <= 2){ // supposedly this means it hit the top of the canvas
         //printf("ACERTOU O TOP!!!");
         //screenGotoxy(bolinha->posX, bolinha->posY);
 
@@ -140,7 +140,7 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
         
     }
 
-    if (bolinha->posY >= SCREEN_HEIGHT){ // hit the bottom of the canvas
+    if (bolinha->posY >= SCREEN_HEIGHT - 1){ // hit the bottom of the canvas
         screenGotoxy(0, SCREEN_HEIGHT);
         printf("└"); //┐  ┘ └   Reconstruct the entire wall as soon as there's contact
         for(int i = 0; i < SCREEN_WIDTH-3; i++){
@@ -157,10 +157,10 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
     //first, scores:
 
-    if (bolinha->posX >= SCREEN_WIDTH - 1){ // right side has been hit!!!
+    if (bolinha->posX >= SCREEN_WIDTH - 2){ // right side has been hit!!!
         *ponteiroDoScoreP1 = *ponteiroDoScoreP1 + 1;
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
-        printf("│");
+        printf(" │");
         //centerBallandGoRight(bolinha);
         centerBallandGoLeft(bolinha);
     }
@@ -272,7 +272,7 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
 
     //now we need a check to see IF the ball hit the limit of the canvas. If it did so, on the top/bottom, simply bounce back. If it did on the left or right, give score
 
-    if (bolinha->posY <= 1){ // supposedly this means it hit the top of the canvas
+    if (bolinha->posY <= 2){ // supposedly this means it hit the top of the canvas
         //printf("ACERTOU O TOP!!!");
         //screenGotoxy(bolinha->posX, bolinha->posY);
 
@@ -287,7 +287,7 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
         
     }
 
-    if (bolinha->posY >= SCREEN_HEIGHT){ // hit the bottom of the canvas
+    if (bolinha->posY >= SCREEN_HEIGHT - 1){ // hit the bottom of the canvas
         screenGotoxy(0, SCREEN_HEIGHT);
         printf("└"); //┐  ┘ └   Reconstruct the entire wall as soon as there's contact
         for(int i = 0; i < SCREEN_WIDTH-3; i++){
@@ -304,10 +304,10 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
 
     //first, scores:
 
-    if (bolinha->posX >= SCREEN_WIDTH - 1){ // right side has been hit!!!
+    if (bolinha->posX >= SCREEN_WIDTH - 2){ // right side has been hit!!!
         *ponteiroDoScoreP1 = *ponteiroDoScoreP1 + 1;
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
-        printf("│");
+        printf(" │");
         //centerBallandGoRight(bolinha);
         centerBallandGoLeft(bolinha);
     }
@@ -410,10 +410,10 @@ void positionMyThing(struct barrinha *head){
 
 void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50], int *flag){
 
-    screenGotoxy(20 ,20);
+    screenGotoxy(50 ,10);
     printf("%s: %d", player1Name, *p1Score);
 
-    screenGotoxy(SCREEN_WIDTH-20, 20);
+    screenGotoxy(SCREEN_WIDTH-50, 10);
     printf("%s: %d", player2Name, *p2Score);
 
     if(*p1Score  >= SCORE_TO_WIN){
@@ -432,10 +432,10 @@ void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Nam
 
 void showScoreGameMode2(int *team1Score, int *team2Score, char player1Name[50], char player2Name[50], char player3Name[50], char player4Name[50], int *flag){
 
-    screenGotoxy(20 ,20);
+    screenGotoxy(50 ,10);
     printf("%s & %s: %d", player1Name, player2Name, *team1Score);
 
-    screenGotoxy(SCREEN_WIDTH-20, 20);
+    screenGotoxy(SCREEN_WIDTH-50, 10);
     printf("%s & %s : %d", player3Name, player4Name, *team2Score);
 
     if(*team1Score  >= SCORE_TO_WIN){
@@ -447,6 +447,7 @@ void showScoreGameMode2(int *team1Score, int *team2Score, char player1Name[50], 
         *flag = 1;
         screenClear();
         printf("%s & %s WINS!!!", player3Name, player4Name);
+        
     }
 
 //HITTING THE LEFT SIDE MADE TONY GO UP BY 1
@@ -456,11 +457,9 @@ void showScoreGameMode2(int *team1Score, int *team2Score, char player1Name[50], 
 void modifyMyThing(struct barrinha *head, int newX, int newY){
     struct barrinha *n = head;
 
-    screenGotoxy(n->posX, n->posY);
-    printf("   ");
-
     while( n !=  NULL){
-
+        screenGotoxy(n->posX - 1, n->posY);
+        printf("   ");
         if( n->next ==NULL){
             screenGotoxy(n->posX,n->posY);
             printf("   ");
@@ -487,7 +486,7 @@ void game1(char player1Name[50], char player2Name[50]){
     screenInit(1);
     keyboardInit();
     timerInit(25); 
-    screenDrawBorders(); 
+    //screenDrawBorders(); 
 
     
     struct barrinha *myLeftPaddle = NULL;
@@ -549,6 +548,14 @@ void game1(char player1Name[50], char player2Name[50]){
         
 }
 
+void gameMode2Log(char nome1[50], char nome2[50], char nome3[50], char nome4[50], int score1, int score2){
+        FILE *game;
+        game = fopen("gameMode2.txt", "a");
+
+        fprintf(game, "%s\n%s\n%s\n%s\n%d %d\n", nome1, nome2, nome3, nome4, score1, score2);
+        fclose(game);
+ }
+
 void game2(char player1Name[50], char player2Name[50], char player3Name[50], char player4Name[50]){
 
     screenInit(1);
@@ -602,38 +609,36 @@ void game2(char player1Name[50], char player2Name[50], char player3Name[50], cha
                 else if (key == 'a'){
                     modifyMyThing(myLeftPaddle1, 0, 1);
                 }
-                else if (key == 'r'){
+                else if (key == 'g'){
                     modifyMyThing(myLeftPaddle2, 0, -1);
                 }
-                else if (key == 'f'){
+                else if (key == 'b'){
                     modifyMyThing(myLeftPaddle2, 0, 1);
                 }
 
 
-                else if (key == 'u'){
-                    modifyMyThing(myRightPaddle1, 0, -1);
-                }
-                else if (key == 'j'){
-                    modifyMyThing(myRightPaddle1, 0, 1);
-                }
-
-                else if (key == 'o'){
-                    modifyMyThing(myRightPaddle1, 0, -1);
+                else if (key == 'p'){
+                    modifyMyThing(myRightPaddle2, 0, -1);
                 }
                 else if (key == 'l'){
+                    modifyMyThing(myRightPaddle2, 0, 1);
+                }
+
+                else if (key == '9'){
+                    modifyMyThing(myRightPaddle1, 0, -1);
+                }
+                else if (key == '6'){
                     modifyMyThing(myRightPaddle1, 0, 1);
                 }
                 
                 
             }
-            //void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
-            
         }
 
 
     }
     
-    //gameMode1Log(player1Name, player2Name, scoredo1, scoredo2);
+    gameMode2Log(player1Name, player2Name, player3Name, player4Name, scoredo1, scoredo2);
         
 }
 
@@ -758,43 +763,109 @@ int selectScreen(){
 }
 
 
-void escreverHistoricoDePartidas(){
-    FILE *myLittleBigFile, *historico;
-    myLittleBigFile = fopen("gameMode1.txt", "r");
-    if (myLittleBigFile == NULL) {    
-        printf("Não há histórico!");
+void escreverHistoricoDePartidas() {
+    FILE *game1 = fopen("gameMode1.txt", "r");
+    FILE *game2 = fopen("gameMode2.txt", "r");
+    FILE *historico;
+
+    if (game1 == NULL && game2 == NULL) {
+        printf("Não há histórico!\n");
+        return;
     }
-    else{
-        historico = fopen("historico.txt", "w");
-        while(!feof(myLittleBigFile)){
+
+    historico = fopen("historico.txt", "w");
+
+    if (game1 != NULL) {
+        while(!feof(game1)){
             char playerName1Buffer[100], playerName2Buffer[100];
             int score1, score2, len;
 
-            if(fgets(playerName1Buffer, 100, myLittleBigFile) == NULL){
+            if(fgets(playerName1Buffer, 100, game1) == NULL){
                 break;
             };
             len = strlen(playerName1Buffer);
             playerName1Buffer[len - 1] = '\0';
 
-            fgets(playerName2Buffer,100, myLittleBigFile);
+            fgets(playerName2Buffer,100, game1);
             len = strlen(playerName2Buffer);
             playerName2Buffer[len - 1] = '\0';
 
-            fscanf(myLittleBigFile, "%d %d", &score1, &score2);
+            fscanf(game1, "%d %d", &score1, &score2);
 
             fprintf(historico, "%s vs %s (%d - %d)\n", playerName1Buffer, playerName2Buffer, score1, score2);
 
-            fgetc(myLittleBigFile);
+            fgetc(game1);
         }
-        fclose(historico);
-
+        fclose(game1);
     }
-    fclose(myLittleBigFile);
+
+    if (game2 != NULL) {
+        while(!feof(game2)){
+            char playerName1Buffer[100], playerName2Buffer[100], playerName3Buffer[100], playerName4Buffer[100];
+            int score1, score2, len;
+
+            if(fgets(playerName1Buffer, 100, game2) == NULL){
+                break;
+            };
+            len = strlen(playerName1Buffer);
+            playerName1Buffer[len - 1] = '\0';
+
+            fgets(playerName2Buffer,100, game2);
+            len = strlen(playerName2Buffer);
+            playerName2Buffer[len - 1] = '\0';
+
+            fgets(playerName3Buffer,100, game2);
+            len = strlen(playerName3Buffer);
+            playerName3Buffer[len - 1] = '\0';
+
+            fgets(playerName4Buffer,100, game2);
+            len = strlen(playerName4Buffer);
+            playerName4Buffer[len - 1] = '\0';
+
+            fscanf(game2, "%d %d", &score1, &score2);
+
+            fprintf(historico, "%s & %s vs %s & %s (%d - %d)\n", playerName1Buffer, playerName2Buffer, playerName3Buffer, playerName4Buffer, score1, score2);
+
+            fgetc(game2);
+        }
+        fclose(game2);
+    }
+
+    fclose(historico);
+
 }
 
-void clearInputBuffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+void mostrarInstrucoes(){
+    screenInit(1);
+    printf("ALO");
+    while(1){
+
+    }
+    screenGotoxy(30,30);
+    printf("Instruç~oes: ");
+    screenGotoxy(26,31);
+    printf("%splayer 1 do time Vermelho:%s teclas Q e E ", COLOR_RED, COLOR_RESET);
+    screenGotoxy(26,32);
+    printf("%splayer 2 do time Vermelho:%s teclas Q e E ", COLOR_RED, COLOR_RESET);
+    screenGotoxy(26,33);
+    printf("%splayer 1 do time Verde:%s teclas Q e E ", COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(26,34);
+    printf("%splayer 2 do time Verde:%s teclas Q e E ", COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(26, 40);
+
+    printf("Aperte Z para sair dessa tela");
+    keyboardInit();
+    while(1){
+        
+        if(keyhit()){
+            int key = readch();
+            if(key == '\n'){
+                break;
+            }
+        }
+    }
+    keyboardDestroy();
+    //screenDestroy();
 }
 
 
@@ -803,23 +874,6 @@ int main()
     int escolha, len;
     escreverHistoricoDePartidas();
     char player1Name[50], player2Name[50], player3Name[50], player4Name[50];
-    /*
-    printf("You have selected Game Mode 1:\n");
-    printf("1 vs 1\n");
-    printf("Digite o nome do Player 1: \n");
-            
-    fgets(player1Name, 50, stdin);
-    len = strlen(player1Name);
-    player1Name[len - 1] = '\0';
-            
-    printf("Digite o nome do Player 2: \n");
-    fgets(player2Name, 50, stdin);
-    len = strlen(player2Name);
-    player2Name[len - 1] = '\0';
-
-    struct bola bolinha;
-            //startgame1 function
-    game1(player1Name,player2Name);*/
 
     while(1){
         
@@ -830,16 +884,29 @@ int main()
             printf("You have selected Game Mode 1:\n");
             screenGotoxy(30,11);
             printf("1 vs 1\n");
-            screenGotoxy(30,12);
+
+
+            screenGotoxy(26,15);
+            printf("%splayer 1:%s teclas %sQ%s e %sE%s ", COLOR_RED, COLOR_RESET, COLOR_RED, COLOR_RESET,COLOR_RED, COLOR_RESET );
+            screenGotoxy(26,16);
             printf("Digite o nome do Player 1: \n");
-            screenGotoxy(30,13);            
+            screenGotoxy(26,17);            
             fgets(player1Name, 50, stdin);
             len = strlen(player1Name);
             player1Name[len - 1] = '\0';
             
-            screenGotoxy(30,14);
+            /*screenGotoxy(26,15);
+            printf("                                        ");
+            screenGotoxy(26,15);
+            printf("                                        ");
+            screenGotoxy(26,15);
+            printf("                                         ");*/
+            
+            screenGotoxy(26,20);
+            printf("%splayer 2:%s teclas %sK%s e %sI%s ", COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+            screenGotoxy(26,21);
             printf("Digite o nome do Player 2: \n");
-            screenGotoxy(30,15);
+            screenGotoxy(26,22);            
             fgets(player2Name, 50, stdin);
             len = strlen(player2Name);
             player2Name[len - 1] = '\0';
@@ -852,27 +919,49 @@ int main()
 
         else if(escolha == 3){
             
+            screenGotoxy(30,10);
+            printf("You have selected Game Mode 2:\n");
+            screenGotoxy(30,11);
+            printf("2 vs 2\n");
+
             
-            getchar();
-            printf("Digite o nome do Player 1(Time Vermelho): ");
+            screenGotoxy(26,15);
+            printf("%splayer 1 do time VERMELHO:%s teclas %sQ%s e %sE%s ", COLOR_RED, COLOR_RESET, COLOR_RED, COLOR_RESET,COLOR_RED, COLOR_RESET );
+            screenGotoxy(26,16);
+            printf("Digite o nome do Player 1: \n");
+            screenGotoxy(26,17);            
             fgets(player1Name, 50, stdin);
             len = strlen(player1Name);
             player1Name[len - 1] = '\0';
-            
-            printf("Digite o nome do Player 2(Time Vermelho): ");
+
+
+            screenGotoxy(80,15);
+            printf("%splayer 2 do time VERMELHO:%s teclas %sQ%s e %sE%s ", COLOR_RED, COLOR_RESET, COLOR_RED, COLOR_RESET,COLOR_RED, COLOR_RESET );
+            screenGotoxy(80,16);
+            printf("Digite o nome do Player 2: \n");
+            screenGotoxy(80,17);            
             fgets(player2Name, 50, stdin);
             len = strlen(player2Name);
             player2Name[len - 1] = '\0';
 
-            printf("Digite o nome do Player 3(Time Azul): ");
+            screenGotoxy(26,20);
+            printf("%splayer 1 do time VERDE:%s teclas %sQ%s e %sE%s ", COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET,COLOR_GREEN, COLOR_RESET );
+            screenGotoxy(26,21);
+            printf("Digite o nome do Player 1: \n");
+            screenGotoxy(26,22);            
             fgets(player3Name, 50, stdin);
             len = strlen(player3Name);
             player3Name[len - 1] = '\0';
 
-            printf("Digite o nome do Player 4(Time Azul): ");
+            screenGotoxy(80,20);
+            printf("%splayer 2 do time VERDE:%s teclas %sQ%s e %sE%s ", COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET,COLOR_GREEN, COLOR_RESET );
+            screenGotoxy(80,21);
+            printf("Digite o nome do Player 2: \n");
+            screenGotoxy(80,22);            
             fgets(player4Name, 50, stdin);
             len = strlen(player4Name);
             player4Name[len - 1] = '\0';
+            
 
             struct bola bolinha;
             
