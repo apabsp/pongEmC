@@ -182,10 +182,8 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 }
 
 void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita, struct barrinha *headEsquerda2, struct barrinha *headDireita2, struct bola *bolinha, int *ponteiroDoScoreP1, int *ponteiroDoScoreP2){
-    //so for collisions we have a few options:
-    // colliding with paddle 1, paddle 2, upper wall, bottom wall, left goal and right goal
-
-    //(if we're in 4playerMode, we add paddle3, paddle4, left wall, right wall, upper goal and botom goal)
+    // extra collision for the interior paddles
+    //we want to consider the case where the ball comes from behind the paddle
 
 
     struct barrinha *imhere = NULL;
@@ -195,11 +193,11 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
         if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the leftPaddle
 
             // which part of the paddle is it? upper part? middlep art? bottom part???
-            bolinha->dirX=3; //I reverse the result to go the other way, right?
+            bolinha->dirX=1; //I reverse the result to go the other way, right?
             if(imhere->direction == 'u') {
-                bolinha->dirY = -3; // should go up
+                bolinha->dirY = -1; // should go up
             } else if(imhere->direction == 'd') {
-                bolinha->dirY = 3; // down
+                bolinha->dirY = 1; // down
             } else {
                 bolinha->dirY = 0; // straight ahead
             }
@@ -212,12 +210,19 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
 
         if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the leftPaddle
 
-            // which part of the paddle is it? upper part? middlep art? bottom part???
-            bolinha->dirX=3; //I reverse the result to go the other way, right?
+
+            if(bolinha->dirX =-1){ // this means that paddle 2 hits paddle 1's ball. We want to send it back
+                bolinha->dirX=1;
+            } // friendly-fire mechanism basically. this is our game's plan. we Want to incentivize chaos among teammates.
+            else{
+            bolinha->dirX=1;
+            } 
+
+
             if(imhere->direction == 'u') {
-                bolinha->dirY = -3; // should go up
+                bolinha->dirY = -1; // should go up
             } else if(imhere->direction == 'd') {
-                bolinha->dirY = 3; // down
+                bolinha->dirY = 1; // down
             } else {
                 bolinha->dirY = 0; // straight ahead
             }
@@ -245,7 +250,15 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
     while(imhere != NULL){
 
         if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the rightPaddle
-            bolinha->dirX=-1;
+            
+            
+            if(bolinha->dirX =1){
+                bolinha->dirX = -1;
+            }
+            else{
+                bolinha->dirX=1;
+            }
+            
             if(imhere->direction == 'u') {
                 bolinha->dirY = -1; // should go up
             } else if(imhere->direction == 'd') {
@@ -629,6 +642,7 @@ int selectScreen(){
 
 
     screenInit(1);
+    keyboardInit();
     struct nodeMenuOption{
         int coordenadaYDoMenu; 
         struct nodeMenuOption *next;
@@ -704,6 +718,9 @@ int selectScreen(){
             int key = readch();
             if(key == 'z'){
                 screenClear();
+                keyboardDestroy(); //basically with keyboardDestroy, the cursor will be moved to the normal spot.
+                // we basically deactivate the keyhit()'s full functionality
+                //screenClear();
                 //select gamemode. Send this return to main
                 if(wherePlayerIs->coordenadaYDoMenu == 20){
                     return 1; 
@@ -775,6 +792,11 @@ void escreverHistoricoDePartidas(){
     fclose(myLittleBigFile);
 }
 
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 
 int main()
 {
@@ -804,18 +826,20 @@ int main()
         escolha = selectScreen();
         if(escolha == 2){
             
-            
-
+            screenGotoxy(30,10);
             printf("You have selected Game Mode 1:\n");
+            screenGotoxy(30,11);
             printf("1 vs 1\n");
+            screenGotoxy(30,12);
             printf("Digite o nome do Player 1: \n");
-            
+            screenGotoxy(30,13);            
             fgets(player1Name, 50, stdin);
-            keyboardInit();
             len = strlen(player1Name);
             player1Name[len - 1] = '\0';
             
+            screenGotoxy(30,14);
             printf("Digite o nome do Player 2: \n");
+            screenGotoxy(30,15);
             fgets(player2Name, 50, stdin);
             len = strlen(player2Name);
             player2Name[len - 1] = '\0';
