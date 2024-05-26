@@ -4,3 +4,54 @@ tanaka
 rafa
 tanaka
 2 0
+antonio paulo
+heloisa tanaka
+0 2
+testando
+eu
+2 0
+eu
+tu
+2 0
+eu
+tu
+2 0
+eu
+tu
+2 0
+eu
+tu
+2 0
+eu
+tu
+2 0
+teu
+eu
+0 2
+eu
+tu
+0 2
+eu
+tu
+2 0
+eu
+tu
+2 0
+eu
+tu
+0 2
+eu
+tu
+1 2
+eu
+tu
+0 2
+eu
+tu
+2 1
+eu
+tu
+2 1
+eu
+tu
+0 2

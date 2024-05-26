@@ -5,9 +5,14 @@
 #include "timer.h"
 #include <stdlib.h>
 #include <stdio.h>
-#define SCREEN_HEIGHT 72
-#define SCREEN_WIDTH 240
-#define SCORE_TO_WIN 2
+#define SCREEN_HEIGHT 48
+#define SCREEN_WIDTH 180
+#define SCORE_TO_WIN 100
+#define COLOR_RESET "\033[0m"
+#define COLOR_RED "\033[0;31m"
+#define COLOR_GREEN "\033[0;32m"
+#define COLOR_BLUE "\033[0;34m"
+
 
 struct barrinha{
     int posY;
@@ -18,7 +23,7 @@ struct barrinha{
 };
 
 struct bola{
-    char myRepresentation;
+    char myRepresentation[30];
     int posX;
     int posY;
     int dirX;
@@ -44,29 +49,29 @@ void moveBall(struct bola *bolinha) {
     
     
     screenGotoxy(bolinha->posX, bolinha->posY);
-    printf("%c", bolinha->myRepresentation);
+    printf("%s", bolinha->myRepresentation);
 
 }
 
 
 void centerBallandGoLeft( struct bola *bolinha){
 
-    bolinha->posX = 120;
-    bolinha->posY = 30;
-    bolinha->dirX = 1;
+    bolinha->posX = SCREEN_WIDTH/2;
+    bolinha->posY = SCREEN_HEIGHT/2;
+    bolinha->dirX = -1;
     bolinha-> dirY = 0;
 }
 
 void centerBallandGoRight( struct bola *bolinha){
 
-    bolinha->posX = 120;
-    bolinha->posY = 30;
-    bolinha->dirX = -1;
+    bolinha->posX = SCREEN_WIDTH/2;
+    bolinha->posY = SCREEN_HEIGHT/2;
+    bolinha->dirX = 1;
     bolinha-> dirY = 0;
 }
 
 void boogieWoogie( struct bola *bolinha){
-
+//potential power up
     bolinha->posX = 30;
     bolinha->posY = 30;
 }
@@ -79,6 +84,9 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
     //(if we're in 4playerMode, we add paddle3, paddle4, left wall, right wall, upper goal and botom goal)
 
+    int momentOfImpactX;
+    int momentOfImpactY;
+
     struct barrinha *imhere = NULL;
     imhere = headEsquerda;
     while(imhere != NULL){
@@ -88,9 +96,9 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
             // which part of the paddle is it? upper part? middlep art? bottom part???
             bolinha->dirX=1; //I reverse the result to go the other way, right?
             if(imhere->direction == 'u') {
-                bolinha->dirY = 1; // should go up
+                bolinha->dirY = -1; // should go up
             } else if(imhere->direction == 'd') {
-                bolinha->dirY = -1; // down
+                bolinha->dirY = 1; // down
             } else {
                 bolinha->dirY = 0; // straight ahead
             }
@@ -104,9 +112,9 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
         if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the rightPaddle
             bolinha->dirX=-1;
             if(imhere->direction == 'u') {
-                bolinha->dirY = 1; // should go up
+                bolinha->dirY = -1; // should go up
             } else if(imhere->direction == 'd') {
-                bolinha->dirY = -1; // down
+                bolinha->dirY = 1; // down
             } else {
                 bolinha->dirY = 0; // straight ahead
             }
@@ -116,13 +124,22 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
     //now we need a check to see IF the ball hit the limit of the canvas. If it did so, on the top/bottom, simply bounce back. If it did on the left or right, give score
 
-    if (bolinha->posY == SCREEN_HEIGHT - 13){ // supposedly this means it hit the bottom of the canvas
-        bolinha->dirY =  -1;
+    if (bolinha->posY == 1){ // supposedly this means it hit the top of the canvas
+        //printf("ACERTOU O TOP!!!");
+        momentOfImpactX= bolinha->posX;
+        momentOfImpactY= bolinha->posY;
+        bolinha->dirY =  1;
+        screenGotoxy(momentOfImpactX,momentOfImpactY);
+        printf("─");
 
+        
     }
 
-    if (bolinha->posY == 2){ // supposedly this means it hit the top of the canvas, so I need the final result to be negative SCREEN HEIGHT
-        bolinha->dirY =  1;
+    if (bolinha->posY == SCREEN_HEIGHT){ // supposedly this means it hit the top of the canvas, so I need the final result to be negative SCREEN HEIGHT
+        screenGotoxy(bolinha->posX, bolinha->posY);
+        bolinha->dirY =  -1;
+        printf("─");
+        
 
     }
 
@@ -132,16 +149,16 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
     if (bolinha->posX == SCREEN_WIDTH){ // right side has been hit!!!
         *ponteiroDoScoreP1 = *ponteiroDoScoreP1 + 1;
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
-        printf(" ");
-        centerBallandGoLeft(bolinha);
+        printf("│");
+        centerBallandGoRight(bolinha);
     }
 
 
-    if (bolinha->posX == 0){
+    if (bolinha->posX == 1){ // left side has been hit!!!
         *ponteiroDoScoreP2 = *ponteiroDoScoreP2 + 1;
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
-        printf(" ");
-        centerBallandGoRight(bolinha);
+        printf("│");
+        centerBallandGoLeft(bolinha);
     }
 
     //what now?,right, teleportation of ball in case we get a score.
@@ -152,46 +169,46 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
 }
 
-// file handle now....
-//when game1() starts, open file and read from it. then write when game ends
 
 void debugMode(struct bola *bolinha){
-    screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2); // maybe i'm not using the defined values actually
+    screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+    printf("                             ");
+    screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
     printf("x: %d y: %d", bolinha->posX, bolinha->posY);
+
+
 
 }
 
 
-//int flag = 0;
-
-//if(flag == 0){
-//    changeMyBallPosition(bolinha, -1, -1)
-//}
 
 
-void startMyPaddle(struct barrinha **head, int startingPositionX, int startingPositionY, int height) {
+
+
+void startMyPaddle(struct barrinha **head, int startingPositionX, int startingPositionY, int height) { // recommended height is 6
     *head = (struct barrinha *)malloc(sizeof(struct barrinha));
     (*head)->posY = startingPositionY;
     (*head)->posX = startingPositionX;
     (*head)->next = NULL;
 
     struct barrinha *current = *head;
-
+    current->direction = 'u';
 
     for (int i = 1; i < height; i++) {
         struct barrinha *meuNovo = (struct barrinha *)malloc(sizeof(struct barrinha));
         meuNovo->posY = startingPositionY + i; 
         meuNovo->posX = startingPositionX;
+       // Intencao era se I for menor que 25% do height, mas nao funcionou totalmente.
        
-        if ( height / i > height/2){
+        if ( i <= 1){
 
+            meuNovo->direction = 'u';
+
+        } else if(i >= height - 2){
             meuNovo->direction = 'd';
-
-        } else if(i == height/2){
-            meuNovo->direction = 'm';
         }
         else{
-            meuNovo->direction = 'u';
+            meuNovo->direction = 'm';
         }
 
         meuNovo->next = NULL;
@@ -206,7 +223,7 @@ void positionMyThing(struct barrinha *head){
     while( n !=  NULL){
         
         screenGotoxy(n->posX, n->posY);
-        printf("|");
+        printf("%c", n->direction);
         n = n -> next;
         
     }
@@ -215,10 +232,10 @@ void positionMyThing(struct barrinha *head){
 
 void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50], int *flag){
 
-    screenGotoxy(40 ,20);
+    screenGotoxy(20 ,20);
     printf("%s: %d", player1Name, *p1Score);
 
-    screenGotoxy(180, 20);
+    screenGotoxy(SCREEN_WIDTH-20, 20);
     printf("%s: %d", player2Name, *p2Score);
 
     if(*p1Score  >= SCORE_TO_WIN){
@@ -239,7 +256,7 @@ void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Nam
 void modifyMyThing(struct barrinha *head, int newX, int newY){
     struct barrinha *n = head;
 
-    screenGotoxy(head->posX, n->posY);
+    screenGotoxy(n->posX, n->posY);
     printf(" ");
 
     while( n !=  NULL){
@@ -275,23 +292,22 @@ void game1(char player1Name[50], char player2Name[50]){
     
     struct barrinha *myLeftPaddle = NULL;
     struct barrinha *myRightPaddle = NULL;
-    int height = 10;
-    startMyPaddle(&myLeftPaddle, 10, 10, height);
-    startMyPaddle(&myRightPaddle, 230, 10, height);
+    int height = 6;
+    startMyPaddle(&myLeftPaddle, 5, SCREEN_HEIGHT/2, height); // remember, this initializes where THE HEAD starts. So the spawn isn't centered. intentional.
+    startMyPaddle(&myRightPaddle, SCREEN_WIDTH - 5, SCREEN_HEIGHT/2, height);
 
     /*Might be cool to turn this entire thing into a bolinha initializer function v*/
     struct bola *bolinha = (struct bola*)malloc(sizeof(struct bola));
-    bolinha->posX = 30;
-    bolinha->posY = 30;
-    bolinha->myRepresentation = 'O';
-    bolinha->dirX = 1;
-    bolinha->dirY = 0;
+    //bolinha->myRepresentation = "0";
+    strcpy(bolinha->myRepresentation,"🏐");
+    centerBallandGoRight(bolinha);
 
     struct bola *next = (struct bola*)malloc(sizeof(struct bola));
     
     next->posX = 30;
     next->posY = 30;
-    next->myRepresentation = 'O';
+    //next->myRepresentation = "O";
+    strcpy(next->myRepresentation,"🏐");
     next->dirX = 1;
     next->dirY = 0;
     bolinha->next = next;
@@ -303,6 +319,7 @@ void game1(char player1Name[50], char player2Name[50]){
 
     //(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50])
     while (flagForGameOver == 0) {
+        
         //comment this to stop debug mode:
         showScore(p1Score, p2Score, player1Name, player2Name, &flagForGameOver);
         debugMode(bolinha);
@@ -336,6 +353,44 @@ void game1(char player1Name[50], char player2Name[50]){
     
     gameMode1Log(player1Name, player2Name, scoredo1, scoredo2);
         
+}
+
+void selectScreen(){
+    //so I'm thinking of having nodes that can go back and forth. Depending on the getKey(), it goes up or down on the list! if it encounters null, don't do nothin
+
+    //exactly then, I can have two functions that can be pulled right here, depending on the user's input: he can either up-down or press select
+    //function 1 will be for up-down, where we'll iterate through the list and change the node's "active or inactive" variable.
+    //function 2 will be for selecting the game mode, again by iterating through the list and checking which node is active
+
+    screenInit(1);
+
+    struct nodeMenuOption{
+        int isThisTheOptionChosen; // 0 is for no, 1 is for yes. The HEAD will always start as 1
+        struct node *next;
+        struct node *previous;
+
+    };
+    screenGotoxy(15, 10);
+    printf("%s  _____   ____  _   _  _____     %s %s     __  __           _____ _______ ______ _____   _____ %s\n", COLOR_RED, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(15, 11);
+    printf("%s |  __ \\ / __ \\| \\ | |/ ____| %s %s       |  \\/  |   /\\    / ____|__   __|  ____|  __ \\ / ____|%s\n", COLOR_RED, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(15, 12);
+    printf("%s | |__) | |  | |  \\| | |  __     %s %s    | \\  / |  /  \\  | (___    | |  | |__  | |__) | (___  %s\n", COLOR_RED, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(15, 13);
+    printf("%s |  ___/| |  | | . ` | | |_ |     %s %s   | |\\/| | / /\\ \\  \\___ \\   | |  |  __| |  _  / \\___ \\ %s\n", COLOR_RED, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(15, 14);
+    printf("%s | |    | |__| | |\\  | |__| |    %s %s    | |  | |/ ____ \\ ____) |  | |  | |____| | \\ \\ ____) |%s\n", COLOR_RED, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(15, 15);
+    printf("%s |_|     \\____/|_| \\_|\\_____|  %s %s      |_|  |_/_/    \\_\\_____/   |_|  |______|_|  \\_\\_____/%s feito em C\n", COLOR_RED, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(15, 17);
+    printf("por ANTONIO PAULO BARROS, HELOISA TANAKA, RAFAELA VIDAL\n");
+    
+
+
+    while(1){
+        
+    }
+    screenDestroy();
 }
 
 
@@ -377,6 +432,7 @@ void escreverHistoricoDePartidas(){
 int main()
 {
 
+    //selectScreen();
     int escolha, len;
     while(1){
         escreverHistoricoDePartidas();
