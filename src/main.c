@@ -26,11 +26,11 @@ struct barrinha{
 
 struct bola{
     char myRepresentation[30];
-    int posX;
-    int posY;
+    int posX; 
+    int posY; 
     int dirX;
     int dirY;
-    struct bola *next; //Interesting thing about this is that we want to continuously be deleting the head and then filling in the *next
+     //Interesting thing about this is that we want to continuously be deleting the head and then filling in the *next
 };
 
 struct ballDirection{
@@ -73,11 +73,6 @@ void centerBallandGoRight( struct bola *bolinha){
     bolinha-> dirY = 0;
 }
 
-void boogieWoogie( struct bola *bolinha){
-//potential power up. switch paddles' places
-    bolinha->posX = 30;
-    bolinha->posY = 30;
-}
 
 
 
@@ -86,16 +81,22 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
     // colliding with paddle 1, paddle 2, upper wall, bottom wall, left goal and right goal
 
     //(if we're in 4playerMode, we add paddle3, paddle4, left wall, right wall, upper goal and botom goal)
-
-
     struct barrinha *imhere = NULL;
+
+    //logica da colisao do paddle tocando EM CIMA
+
+
+
+
+
+    //COLISAO DOS PADDLES COM A BOLA
     imhere = headEsquerda;
     while(imhere != NULL){
-
-        if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // WE GET A PADDLE HIT RIGHT HERE on the leftPaddle
+        
+        if ( bolinha->posX == imhere->posX && bolinha->posY == imhere->posY){ // Colisao de bola com paddle
 
             // which part of the paddle is it? upper part? middlep art? bottom part???
-            bolinha->dirX=1; //I reverse the result to go the other way, right?
+            bolinha->dirX=1; //I reverse the result so the ball goes the other way
             if(imhere->direction == 'u') {
                 bolinha->dirY = -1; // should go up
             } else if(imhere->direction == 'd') {
@@ -131,23 +132,13 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
 
         bolinha->dirY =  1;
         
-        screenGotoxy(0, 0);
-        printf("┌"); //┐  ┘ └   Reconstruct the entire wall as soon as there's contact
-        for(int i = 0; i < SCREEN_WIDTH-3; i++){
-            printf("─");
-        };
-        printf("┐");
+
         
     }
 
+
     if (bolinha->posY >= SCREEN_HEIGHT - 1){ // hit the bottom of the canvas
-        screenGotoxy(0, SCREEN_HEIGHT);
-        printf("└"); //┐  ┘ └   Reconstruct the entire wall as soon as there's contact
-        for(int i = 0; i < SCREEN_WIDTH-3; i++){
-            printf("─");
-        };
-        printf("┘");
-        bolinha->dirY =  1;
+
         bolinha->dirY =  -1;
     
         
@@ -162,7 +153,7 @@ void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita,
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
         printf(" │");
         //centerBallandGoRight(bolinha);
-        centerBallandGoLeft(bolinha);
+        centerBallandGoRight(bolinha);
     }
 
 
@@ -329,11 +320,16 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
 }
 
 
-void debugMode(struct bola *bolinha){
+void debugMode(struct bola *bolinha, struct barrinha *head){
     screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
     printf("                             ");
     screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
     printf("x: %d y: %d", bolinha->posX, bolinha->posY);
+
+    screenGotoxy(10, 10);
+    printf("                             "); 
+    screenGotoxy(10, 10);
+    printf("paddle1 x:%d y:%d ", head->posX, head->posY);
 
 
 
@@ -454,24 +450,32 @@ void showScoreGameMode2(int *team1Score, int *team2Score, char player1Name[50], 
 }
 
 
-void modifyMyThing(struct barrinha *head, int newX, int newY){
+void modifyMyThing(struct barrinha *head, int newX, int newY, int paddleHeight){
     struct barrinha *n = head;
+    
+    // checa se paddle vai tocar no top ou bottom
+    if (head->posY + newY <= 1 || head->posY + newY + paddleHeight >= SCREEN_HEIGHT + 1) {
+        return; // esse return e necessario para terminar a funcao em casos onde o if eh vdd
+    }
 
-    while( n !=  NULL){
-        screenGotoxy(n->posX - 1, n->posY);
-        printf("   ");
-        if( n->next ==NULL){
-            screenGotoxy(n->posX,n->posY);
-            printf("   ");
-        }
-        
-        n->posY += newY;
-        n->posX += newX;
+    //limpa a posicao do paddle continuamente, caso possa se mover
+    while (n != NULL) {
+        screenGotoxy(n->posX, n->posY);
+        printf(" ");
         n = n->next;
-        
+    }
+
+    
+    n = head;
+    while (n != NULL) {
+        n->posY += newY;
+        n = n->next;
     }
 
 }
+
+
+
 
 void gameMode1Log(char nome1[50], char nome2[50], int score1, int score2){
     FILE *game;
@@ -485,8 +489,7 @@ void game1(char player1Name[50], char player2Name[50]){
 
     screenInit(1);
     keyboardInit();
-    timerInit(25); 
-    //screenDrawBorders(); 
+    timerInit(15); 
 
     
     struct barrinha *myLeftPaddle = NULL;
@@ -497,7 +500,6 @@ void game1(char player1Name[50], char player2Name[50]){
 
     /*Might be cool to turn this entire thing into a bolinha initializer function v*/
     struct bola *bolinha = (struct bola*)malloc(sizeof(struct bola));
-    //bolinha->myRepresentation = "0";
     strcpy(bolinha->myRepresentation,"🏐");
     centerBallandGoRight(bolinha);
 
@@ -508,12 +510,12 @@ void game1(char player1Name[50], char player2Name[50]){
     int *p2Score = &scoredo2;
     int flagForGameOver = 0; // turn this into 1 to end game!!
 
-    //(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50])
+    
     while (flagForGameOver == 0) {
         
-        //comment this to stop debug mode:
+        
         showScore(p1Score, p2Score, player1Name, player2Name, &flagForGameOver);
-        debugMode(bolinha);
+        debugMode(bolinha, myLeftPaddle);
         if (timerTimeOver()) {
             positionMyThing(myLeftPaddle);
             positionMyThing(myRightPaddle);
@@ -523,21 +525,20 @@ void game1(char player1Name[50], char player2Name[50]){
             if (keyhit()) {
                 int key = readch();
                 if (key == 'w'){
-                    modifyMyThing(myLeftPaddle, 0, -1);
+                    modifyMyThing(myLeftPaddle, 0, -1, height);
                 }
                 else if (key == 's'){
-                    modifyMyThing(myLeftPaddle, 0, 1);
+                    modifyMyThing(myLeftPaddle, 0, 1, height);
                 }
                 else if (key == 'i'){
-                    modifyMyThing(myRightPaddle, 0, -1);
+                    modifyMyThing(myRightPaddle, 0, -1, height);
                 }
                 else if (key == 'k'){
-                    modifyMyThing(myRightPaddle, 0, 1);
+                    modifyMyThing(myRightPaddle, 0, 1, height);
                 }
                 
                 
             }
-            //void collisionCheck(struct barrinha *headEsquerda, struct barrinha *headDireita, struct bola *bolinha){
             
         }
 
@@ -545,7 +546,8 @@ void game1(char player1Name[50], char player2Name[50]){
     }
     
     gameMode1Log(player1Name, player2Name, scoredo1, scoredo2);
-        
+    screenClear();
+    keyboardDestroy();
 }
 
 void gameMode2Log(char nome1[50], char nome2[50], char nome3[50], char nome4[50], int score1, int score2){
@@ -587,48 +589,45 @@ void game2(char player1Name[50], char player2Name[50], char player3Name[50], cha
     int *p2Score = &scoredo2;
     int flagForGameOver = 0; // turn this into 1 to end game!!
 
-    //(int *p1Score, int *p2Score, char player1Name[50], char player2Name[50])
     while (flagForGameOver == 0) {
         
         //comment this to stop debug mode:
         showScoreGameMode2(p1Score, p2Score, player1Name, player2Name, player3Name, player4Name, &flagForGameOver);
-        debugMode(bolinha);
+        debugMode(bolinha,myLeftPaddle1);
         if (timerTimeOver()) {
             positionMyThing(myLeftPaddle1);
             positionMyThing(myRightPaddle1);
             positionMyThing(myLeftPaddle2);
             positionMyThing(myRightPaddle2);
             collisionCheck2(myLeftPaddle1, myRightPaddle1, myLeftPaddle2, myRightPaddle2, bolinha, p1Score, p2Score); 
-            // collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita, struct barrinha *headEsquerda2, struct barrinha *headDireita2, struct bola *bolinha, int *ponteiroDoScoreP1, int *ponteiroDoScoreP2)
-            moveBall(bolinha);
             if (keyhit()) {
                 int key = readch();
                 if (key == 'q'){
-                    modifyMyThing(myLeftPaddle1, 0, -1);
+                    modifyMyThing(myLeftPaddle1, 0, -1, height);
                 }
                 else if (key == 'a'){
-                    modifyMyThing(myLeftPaddle1, 0, 1);
+                    modifyMyThing(myLeftPaddle1, 0, 1, height);
                 }
                 else if (key == 'g'){
-                    modifyMyThing(myLeftPaddle2, 0, -1);
+                    modifyMyThing(myLeftPaddle2, 0, -1, height);
                 }
                 else if (key == 'b'){
-                    modifyMyThing(myLeftPaddle2, 0, 1);
+                    modifyMyThing(myLeftPaddle2, 0, 1, height);
                 }
 
 
                 else if (key == 'p'){
-                    modifyMyThing(myRightPaddle2, 0, -1);
+                    modifyMyThing(myRightPaddle2, 0, -1, height);
                 }
                 else if (key == 'l'){
-                    modifyMyThing(myRightPaddle2, 0, 1);
+                    modifyMyThing(myRightPaddle2, 0, 1, height);
                 }
 
                 else if (key == '9'){
-                    modifyMyThing(myRightPaddle1, 0, -1);
+                    modifyMyThing(myRightPaddle1, 0, -1, height);
                 }
                 else if (key == '6'){
-                    modifyMyThing(myRightPaddle1, 0, 1);
+                    modifyMyThing(myRightPaddle1, 0, 1, height);
                 }
                 
                 
@@ -639,7 +638,8 @@ void game2(char player1Name[50], char player2Name[50], char player3Name[50], cha
     }
     
     gameMode2Log(player1Name, player2Name, player3Name, player4Name, scoredo1, scoredo2);
-        
+    keyboardDestroy();
+    screenClear();
 }
 
 
@@ -721,12 +721,9 @@ int selectScreen(){
     
         if(keyhit()){
             int key = readch();
-            if(key == 'z'){
+            if(key == '\n'){
                 screenClear();
-                keyboardDestroy(); //basically with keyboardDestroy, the cursor will be moved to the normal spot.
-                // we basically deactivate the keyhit()'s full functionality
-                //screenClear();
-                //select gamemode. Send this return to main
+                keyboardDestroy();
                 if(wherePlayerIs->coordenadaYDoMenu == 20){
                     return 1; 
                 }
@@ -742,14 +739,14 @@ int selectScreen(){
                 
             }
             else if( key == 's'){
-                if (wherePlayerIs->next!=NULL){
+                if (wherePlayerIs->next != NULL){
                     clearArrow();
                     wherePlayerIs = wherePlayerIs->next;
                 }
 
             }
             else if( key == 'w'){
-                if (wherePlayerIs->previous!=NULL){
+                if (wherePlayerIs->previous != NULL){
                     clearArrow();
                     wherePlayerIs = wherePlayerIs->previous;
                 }
@@ -865,7 +862,6 @@ void mostrarInstrucoes(){
         }
     }
     keyboardDestroy();
-    //screenDestroy();
 }
 
 
@@ -895,13 +891,6 @@ int main()
             len = strlen(player1Name);
             player1Name[len - 1] = '\0';
             
-            /*screenGotoxy(26,15);
-            printf("                                        ");
-            screenGotoxy(26,15);
-            printf("                                        ");
-            screenGotoxy(26,15);
-            printf("                                         ");*/
-            
             screenGotoxy(26,20);
             printf("%splayer 2:%s teclas %sK%s e %sI%s ", COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
             screenGotoxy(26,21);
@@ -914,6 +903,7 @@ int main()
             struct bola bolinha;
             //startgame1 function
             game1(player1Name,player2Name);
+            keyboardDestroy();
 
         }
 
@@ -966,7 +956,7 @@ int main()
             struct bola bolinha;
             
             game2(player1Name, player2Name, player3Name, player4Name);
-
+            keyboardDestroy();
         }
 
         escreverHistoricoDePartidas();
