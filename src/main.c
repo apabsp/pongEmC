@@ -7,7 +7,7 @@
 #include <stdio.h>
 #define SCREEN_HEIGHT 48
 #define SCREEN_WIDTH 180
-#define SCORE_TO_WIN 5
+#define SCORE_TO_WIN 2
 #define COLOR_RESET "\033[0m"
 #define COLOR_RED "\033[0;31m"
 #define COLOR_GREEN "\033[0;32m"
@@ -300,7 +300,7 @@ void collisionCheck2(struct barrinha *headEsquerda, struct barrinha *headDireita
         screenGotoxy(bolinha->posX, bolinha->posY); // might be next pointer here instead
         printf(" │");
         //centerBallandGoRight(bolinha);
-        centerBallandGoLeft(bolinha);
+        centerBallandGoRight(bolinha);
     }
 
 
@@ -414,13 +414,23 @@ void showScore(int *p1Score, int *p2Score, char player1Name[50], char player2Nam
 
     if(*p1Score  >= SCORE_TO_WIN){
         *flag = 1;
-        screenClear();
-        printf("%s WINS!!!", player1Name);
+        timerInit(3000); // 3 SEGUNDOS DE WAIT TIME
+        screenGotoxy(25,5);
+
+        while (!timerTimeOver()) {
+                screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+                printf("%s%s WINS!!!%s", COLOR_RED, player1Name, COLOR_RESET);
+        }
     }
     if(*p2Score  >= SCORE_TO_WIN){
         *flag = 1;
-        screenClear();
-        printf("%s WINS!!!", player2Name);
+        timerInit(3000);
+        screenGotoxy(25,5);
+
+        while (!timerTimeOver()) {
+                screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+                printf("%s%s WINS!!!%s", COLOR_GREEN, player2Name, COLOR_RESET);
+        }
     }
 
 
@@ -436,14 +446,23 @@ void showScoreGameMode2(int *team1Score, int *team2Score, char player1Name[50], 
 
     if(*team1Score  >= SCORE_TO_WIN){
         *flag = 1;
-        screenClear();
-        printf("%s & %s WINS!!!", player1Name, player2Name);
+        timerInit(3000); // 3 SEGUNDOS DE WAIT TIME
+        screenGotoxy(25,5);
+
+        while (!timerTimeOver()) {
+                screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+                printf("%s%s & %s WINS!!!%s", COLOR_RED, player1Name, player2Name, COLOR_RESET);
+        }
     }
     if(*team2Score  >= SCORE_TO_WIN){
         *flag = 1;
-        screenClear();
-        printf("%s & %s WINS!!!", player3Name, player4Name);
-        
+        timerInit(3000);
+        screenGotoxy(25,5);
+
+        while (!timerTimeOver()) {
+                screenGotoxy(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+                printf("%s%s & %s WINS!!!%s", COLOR_GREEN, player3Name, player4Name, COLOR_RESET);
+        }
     }
 
 //HITTING THE LEFT SIDE MADE TONY GO UP BY 1
@@ -515,7 +534,7 @@ void game1(char player1Name[50], char player2Name[50]){
         
         
         showScore(p1Score, p2Score, player1Name, player2Name, &flagForGameOver);
-        debugMode(bolinha, myLeftPaddle);
+        //debugMode(bolinha, myLeftPaddle);
         if (timerTimeOver()) {
             positionMyThing(myLeftPaddle);
             positionMyThing(myRightPaddle);
@@ -524,16 +543,16 @@ void game1(char player1Name[50], char player2Name[50]){
             moveBall(bolinha);
             if (keyhit()) {
                 int key = readch();
-                if (key == 'w'){
+                if (key == 'q'){
                     modifyMyThing(myLeftPaddle, 0, -1, height);
                 }
-                else if (key == 's'){
+                else if (key == 'a'){
                     modifyMyThing(myLeftPaddle, 0, 1, height);
                 }
-                else if (key == 'i'){
+                else if (key == 'p'){
                     modifyMyThing(myRightPaddle, 0, -1, height);
                 }
-                else if (key == 'k'){
+                else if (key == 'l'){
                     modifyMyThing(myRightPaddle, 0, 1, height);
                 }
                 
@@ -548,6 +567,7 @@ void game1(char player1Name[50], char player2Name[50]){
     gameMode1Log(player1Name, player2Name, scoredo1, scoredo2);
     screenClear();
     keyboardDestroy();
+    free(bolinha);
 }
 
 void gameMode2Log(char nome1[50], char nome2[50], char nome3[50], char nome4[50], int score1, int score2){
@@ -576,11 +596,14 @@ void game2(char player1Name[50], char player2Name[50], char player3Name[50], cha
     startMyPaddle(&myRightPaddle1, SCREEN_WIDTH - 5, SCREEN_HEIGHT/2, height, 'g');
     startMyPaddle(&myRightPaddle2, SCREEN_WIDTH - 25, SCREEN_HEIGHT/2, height, 'g');
 
+
     /*Might be cool to turn this entire thing into a bolinha initializer function v*/
     struct bola *bolinha = (struct bola*)malloc(sizeof(struct bola));
     //bolinha->myRepresentation = "0";
     strcpy(bolinha->myRepresentation,"🏐");
-    centerBallandGoRight(bolinha);
+    
+    centerBallandGoLeft(bolinha);
+    
 
     
     int scoredo1 = 0;
@@ -593,13 +616,14 @@ void game2(char player1Name[50], char player2Name[50], char player3Name[50], cha
         
         //comment this to stop debug mode:
         showScoreGameMode2(p1Score, p2Score, player1Name, player2Name, player3Name, player4Name, &flagForGameOver);
-        debugMode(bolinha,myLeftPaddle1);
+        //debugMode(bolinha,myLeftPaddle1);
         if (timerTimeOver()) {
             positionMyThing(myLeftPaddle1);
             positionMyThing(myRightPaddle1);
             positionMyThing(myLeftPaddle2);
             positionMyThing(myRightPaddle2);
-            collisionCheck2(myLeftPaddle1, myRightPaddle1, myLeftPaddle2, myRightPaddle2, bolinha, p1Score, p2Score); 
+            collisionCheck2(myLeftPaddle1, myRightPaddle1, myLeftPaddle2, myRightPaddle2, bolinha, p1Score, p2Score);
+            moveBall(bolinha); 
             if (keyhit()) {
                 int key = readch();
                 if (key == 'q'){
@@ -640,6 +664,7 @@ void game2(char player1Name[50], char player2Name[50], char player3Name[50], cha
     gameMode2Log(player1Name, player2Name, player3Name, player4Name, scoredo1, scoredo2);
     keyboardDestroy();
     screenClear();
+    free(bolinha);
 }
 
 
@@ -829,28 +854,25 @@ void escreverHistoricoDePartidas() {
     }
 
     fclose(historico);
+    
 
 }
 
 void mostrarInstrucoes(){
-    screenInit(1);
-    printf("ALO");
-    while(1){
 
-    }
-    screenGotoxy(30,30);
+    screenGotoxy(30,10);
     printf("Instruç~oes: ");
-    screenGotoxy(26,31);
-    printf("%splayer 1 do time Vermelho:%s teclas Q e E ", COLOR_RED, COLOR_RESET);
-    screenGotoxy(26,32);
-    printf("%splayer 2 do time Vermelho:%s teclas Q e E ", COLOR_RED, COLOR_RESET);
-    screenGotoxy(26,33);
-    printf("%splayer 1 do time Verde:%s teclas Q e E ", COLOR_GREEN, COLOR_RESET);
-    screenGotoxy(26,34);
-    printf("%splayer 2 do time Verde:%s teclas Q e E ", COLOR_GREEN, COLOR_RESET);
-    screenGotoxy(26, 40);
+    screenGotoxy(26,11);
+    printf("%splayer 1 do time Vermelho:%s teclas Q e A ", COLOR_RED, COLOR_RESET);
+    screenGotoxy(26,12);
+    printf("%splayer 2 do time Vermelho:%s teclas G e B ", COLOR_RED, COLOR_RESET);
+    screenGotoxy(26,13);
+    printf("%splayer 1 do time Verde:%s teclas P e L ", COLOR_GREEN, COLOR_RESET);
+    screenGotoxy(26,14);
+    printf("%splayer 2 do time Verde:%s teclas 9 e 6 ", COLOR_GREEN, COLOR_RESET);
 
-    printf("Aperte Z para sair dessa tela");
+    screenGotoxy(20, 3);
+    printf("Aperte ENTER para sair dessa tela.\n");
     keyboardInit();
     while(1){
         
@@ -864,17 +886,57 @@ void mostrarInstrucoes(){
     keyboardDestroy();
 }
 
+void lerHistorico(){
+    FILE *arquivo;
+    char linha[256];
+    arquivo = fopen("historico.txt", "r");
+
+    if (arquivo == NULL) {
+        timerInit(3000);
+        while(!timerTimeOver()){
+            screenGotoxy(SCREEN_WIDTH/2, SCREEN_HEIGHT);
+            printf("Nenhum arquivo historico.txt encontrado");
+        }
+        return;
+    }
+
+    screenGotoxy(20, 3);
+    printf("Aperte ENTER para sair dessa tela.\n");
+    int counter = 5;
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        screenGotoxy(20, counter);
+        printf("%s", linha);
+        counter++;
+    }
+    keyboardInit();
+    while(1){
+            if (keyhit()) {
+                int key = readch();
+                if(key == '\n'){
+                    break;
+                }    
+            }
+        }
+    keyboardDestroy();
+    fclose(arquivo);
+    
+}
+
+
 
 int main()
 {
     int escolha, len;
     escreverHistoricoDePartidas();
     char player1Name[50], player2Name[50], player3Name[50], player4Name[50];
-
+    struct bola bolinha;
     while(1){
         
         escolha = selectScreen();
-        if(escolha == 2){
+
+        if(escolha == 1){
+            mostrarInstrucoes();
+        }else if(escolha == 2){
             
             screenGotoxy(30,10);
             printf("You have selected Game Mode 1:\n");
@@ -900,7 +962,6 @@ int main()
             len = strlen(player2Name);
             player2Name[len - 1] = '\0';
 
-            struct bola bolinha;
             //startgame1 function
             game1(player1Name,player2Name);
             keyboardDestroy();
@@ -953,10 +1014,13 @@ int main()
             player4Name[len - 1] = '\0';
             
 
-            struct bola bolinha;
             
+            screenClear();
             game2(player1Name, player2Name, player3Name, player4Name);
             keyboardDestroy();
+        }
+        else if(escolha == 4){
+            lerHistorico();
         }
 
         escreverHistoricoDePartidas();
