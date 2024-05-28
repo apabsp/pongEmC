@@ -17,7 +17,7 @@ Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funci
 
 ## Como Jogar 🕹️
 
-Modo 2 jogadores
+° Modo 2 jogadores
 
 
 Jogador Vermelho: Teclas Q e A
@@ -25,7 +25,7 @@ Jogador Vermelho: Teclas Q e A
 Jogador Verde: Teclas P e L
 
 
-Modo 4 jogadores
+° Modo 4 jogadores
 
 
 Externo Vermelho: Teclas Q e A
