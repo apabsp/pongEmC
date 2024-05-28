@@ -17,6 +17,9 @@ Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funci
 
 ## Como Jogar 🕹️
 
+  Os jogadores controlam pás verticais para rebater uma bola de um lado para o outro, com o objetivo de marcar pontos ao fazer a bola passar pela pá do adversário. 
+
+  
 ° Modo 2 jogadores
 
 
