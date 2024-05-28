@@ -12,7 +12,7 @@
 #define COLOR_RED "\033[0;31m"
 #define COLOR_GREEN "\033[0;32m"
 #define COLOR_BLUE "\033[0;34m"
-
+#define COLOR_BRIGHT_BLUE "\033[1;34m"
 
 
 struct barrinha{
