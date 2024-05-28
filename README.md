@@ -3,16 +3,16 @@
 ![DALL·E 2024-05-27 20 57 16 - A retro-style console video game cover art titled 'PONG MASTERS'](https://github.com/apabsp/pongEmC/assets/95260401/874c282b-77cd-4651-b61b-98edd47f4564)
 
 <p></p>
+
+
+## Sobre o jogo ♟️
+
+
 Pong, lançado em 1972, é um jogo eletrônico de tênis de mesa para arcade, considerado um dos primeiros e mais bem-sucedidos da história.
 
 **PONG MASTERS**, desenvolvido em 2024, é a nossa reconstrução do clássico, utilizando apenas a linguagem C.
 
 Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funcional do segundo período da CESAR School.
-
-
-
-## Sobre o jogo ♟️
-
 
 
 ## Como Jogar 🕹️
@@ -38,6 +38,10 @@ Externo Verde: Teclas 9 e 6
 
 
 ## Instalação 👻
+
+Comando para compilação do jogo: 
+
+gcc -I./include src/*.c  -o pongGame
 
 
 ## Membros
