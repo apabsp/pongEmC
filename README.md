@@ -1,10 +1,18 @@
-# Pong em C 🏓🤖
-Pong, lançado em 1972, é um jogo eletrônico de tênis de mesa para arcade, considerado um dos primeiros e mais bem-sucedidos da história.
-Este repositório visa replicar e aprimorar esse clássico utilizando a linguagem C.
+# PONG MASTERS (Pong em C 🏓🤖)
 
-Esse projeto está sendo desenvolvido para a cadeira de Programação Imperativa e Funcional do segundo período da CESAR School.
+![DALL·E 2024-05-27 20 57 16 - A retro-style console video game cover art titled 'PONG MASTERS'](https://github.com/apabsp/pongEmC/assets/95260401/874c282b-77cd-4651-b61b-98edd47f4564)
+
+<p></p>
+Pong, lançado em 1972, é um jogo eletrônico de tênis de mesa para arcade, considerado um dos primeiros e mais bem-sucedidos da história.
+Este repositório foi criado para replicar e aprimorar esse clássico utilizando a linguagem C.
+
+Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funcional do segundo período da CESAR School.
+
+**PONG MASTERS**, desenvolvido em 2024, é a nossa reconstrução de Pong.
 
 ## Sobre o jogo ♟️
+
+
 
 ## Como Jogar 🕹️
 
