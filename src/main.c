@@ -837,7 +837,7 @@ int main()
             player1Name[len - 1] = '\0';
             
             screenGotoxy(26,20);
-            printf("%splayer 2:%s teclas %sK%s e %sI%s ", COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
+            printf("%splayer 2:%s teclas %sP%s e %sL%s ", COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET, COLOR_GREEN, COLOR_RESET);
             screenGotoxy(26,21);
             printf("Digite o nome do Player 2: \n");
             screenGotoxy(26,22);            
