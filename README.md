@@ -29,6 +29,7 @@ Interno Vermelho: Teclas G e B
 Interno Verde: Teclas P e L
 Externo Verde: Teclas 9 e 6
 
+
 ## Instalação 👻
 
 
