@@ -5,11 +5,13 @@
 <p></p>
 Pong, lançado em 1972, é um jogo eletrônico de tênis de mesa para arcade, considerado um dos primeiros e mais bem-sucedidos da história.
 
+**PONG MASTERS**, desenvolvido em 2024, é a nossa reconstrução de Pong.
+
 Este repositório foi criado para replicar e aprimorar esse clássico utilizando a linguagem C.
 
 Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funcional do segundo período da CESAR School.
 
-**PONG MASTERS**, desenvolvido em 2024, é a nossa reconstrução de Pong.
+
 
 ## Sobre o jogo ♟️
 
