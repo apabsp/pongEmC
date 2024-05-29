@@ -17,7 +17,19 @@ Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funci
 
 ## Como Jogar 🕹️
 
-  Os jogadores controlam pás verticais para rebater uma bola de um lado para o outro, com o objetivo de marcar pontos ao fazer a bola passar pela pá do adversário. 
+  Os jogadores controlam pás verticais para rebater uma bola de um lado para o outro, com o objetivo de marcar pontos ao fazer a bola passar pela pá do adversário. O primeiro time a marcar 5 pontos vence!
+
+<details>
+ <summary><h2>Menu</h2></summary> 
+
+Enter - > Selecionar
+
+W - > mover Seta para Cima
+
+S - > mover Seta para Baixo
+
+
+</details>
 
 <details>
  <summary><h2>Modo 2 jogadores</h2></summary> 
