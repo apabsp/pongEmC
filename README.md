@@ -19,16 +19,17 @@ Esse projeto foi desenvolvido para a cadeira de Programação Imperativa e Funci
 
   Os jogadores controlam pás verticais para rebater uma bola de um lado para o outro, com o objetivo de marcar pontos ao fazer a bola passar pela pá do adversário. 
 
-  
-° Modo 2 jogadores
-
+<details>
+ <summary><h2>Modo 2 jogadores</h2></summary> 
 
 Jogador Vermelho: Teclas Q e A
 
 Jogador Verde: Teclas P e L
 
+</details>
 
-° Modo 4 jogadores
+<details>
+ <summary><h2>Modo 4 jogadores</h2></summary> 
 
 
 Externo Vermelho: Teclas Q e A
@@ -39,13 +40,16 @@ Interno Verde: Teclas P e L
 
 Externo Verde: Teclas 9 e 6
 
+</details>
 
 ## Instalação 👻
 
-Comando para compilação do jogo: 
+Comando para compilação do jogo, estando no diretorio: 
 
 gcc -I./include src/*.c  -o pongGame
 
+Para iniciar o jogo:
+./pongGame
 
 ## Membros
 
